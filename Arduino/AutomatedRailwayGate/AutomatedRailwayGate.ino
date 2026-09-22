@@ -1,23 +1,16 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <SPI.h>
-#include <MFRC522.h>
 
 // ============ LCD ============
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-// ============ RFID ============
-#define RST_PIN   9
-#define SS1_PIN   2   // Reader 1 (2 km A)
-#define SS2_PIN   3   // Reader 2 (1 km A / Exit B)
-#define SS3_PIN   4   // Reader 3 (1 km B / Exit A)
-#define SS4_PIN   5   // Reader 4 (2 km B)
-
-MFRC522 rfid1(SS1_PIN, RST_PIN);
-MFRC522 rfid2(SS2_PIN, RST_PIN);
-MFRC522 rfid3(SS3_PIN, RST_PIN);
-MFRC522 rfid4(SS4_PIN, RST_PIN);
+// ============ IR Sensors ============
+const byte IR_2KM_A_PIN = 2;
+const byte IR_1KM_A_PIN = 3;
+const byte IR_1KM_B_PIN = 4;
+const byte IR_2KM_B_PIN = 5;
+const byte IR_DETECTED = LOW;
 
 // ============ Servo ============
 const byte SERVO_PIN      = 6;
@@ -74,20 +67,16 @@ void openGate() {
   lcd.clear();
 }
 
-// ======== RFID Check Function ========
-bool checkRFID(MFRC522 &rfid) {
-  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) return false;
-  rfid.PICC_HaltA();  // Stop reading same card multiple times
-  return true;
+// ======== IR Sensor Check Function ========
+bool trainDetected(byte sensorPin) {
+  return digitalRead(sensorPin) == IR_DETECTED;
 }
 
 void setup() {
-  // RFID
-  SPI.begin();
-  rfid1.PCD_Init();
-  rfid2.PCD_Init();
-  rfid3.PCD_Init();
-  rfid4.PCD_Init();
+  pinMode(IR_2KM_A_PIN, INPUT);
+  pinMode(IR_1KM_A_PIN, INPUT);
+  pinMode(IR_1KM_B_PIN, INPUT);
+  pinMode(IR_2KM_B_PIN, INPUT);
 
   // Outputs
   pinMode(RED_LED_PIN, OUTPUT);
@@ -117,12 +106,12 @@ void loop() {
 
   switch (currentState) {
     case IDLE:
-      if (checkRFID(rfid1)) {
+      if (trainDetected(IR_2KM_A_PIN)) {
         currentState = A_TO_B_APPROACH;
         lcdPrint("Train A->B", "2 km away");
         closeGate();
         buzzerActive = true;
-      } else if (checkRFID(rfid4)) {
+      } else if (trainDetected(IR_2KM_B_PIN)) {
         currentState = B_TO_A_APPROACH;
         lcdPrint("Train B->A", "2 km away");
         closeGate();
@@ -131,14 +120,14 @@ void loop() {
       break;
 
     case A_TO_B_APPROACH:
-      if (checkRFID(rfid2)) {
+      if (trainDetected(IR_1KM_A_PIN)) {
         currentState = A_TO_B_NEAR;
         lcdPrint("Train A->B", "1 km away");
       }
       break;
 
     case A_TO_B_NEAR:
-      if (checkRFID(rfid3)) {
+      if (trainDetected(IR_1KM_B_PIN)) {
         currentState = A_TO_B_PASSING;
         lcdPrint("Train A->B", "Passing");
         buzzerActive = false;
@@ -146,7 +135,7 @@ void loop() {
       break;
 
     case A_TO_B_PASSING:
-      if (checkRFID(rfid4)) {
+      if (trainDetected(IR_2KM_B_PIN)) {
         lcdPrint("Train A->B", "GO");
         openGate();
         currentState = IDLE;
@@ -154,14 +143,14 @@ void loop() {
       break;
 
     case B_TO_A_APPROACH:
-      if (checkRFID(rfid3)) {
+      if (trainDetected(IR_1KM_B_PIN)) {
         currentState = B_TO_A_NEAR;
         lcdPrint("Train B->A", "1 km away");
       }
       break;
 
     case B_TO_A_NEAR:
-      if (checkRFID(rfid2)) {
+      if (trainDetected(IR_1KM_A_PIN)) {
         currentState = B_TO_A_PASSING;
         lcdPrint("Train B->A", "Passing");
         buzzerActive = false;
@@ -169,7 +158,7 @@ void loop() {
       break;
 
     case B_TO_A_PASSING:
-      if (checkRFID(rfid1)) {
+      if (trainDetected(IR_2KM_A_PIN)) {
         lcdPrint("Train B->A", "GO");
         openGate();
         currentState = IDLE;

@@ -10,12 +10,12 @@ The Automated Railway Gate System using IoT is a smart safety project designed t
 - Support two-way train movement
 
 ## 3. What is the Project About?
-This project uses RFID technology to detect the movement of a train model at different locations. When the train approaches the gate, the system closes the gate and alerts people. After the train passes, the gate opens again automatically.
+This project uses four digital IR obstacle sensors to detect the movement of a train model at different locations. When the train approaches the gate, the system closes the gate and alerts people. After the train passes, the gate opens again automatically.
 
 ## 4. IoT Components Used
 - Arduino Uno / compatible microcontroller
-- RFID RC522 reader modules (4 units)
-- RFID tags attached to the train model
+- IR obstacle sensors (4 units)
+- Reflective markers or the train body detected by the IR sensors
 - Servo motor for gate movement
 - 16x2 I2C LCD display
 - Red and green LEDs
@@ -23,15 +23,15 @@ This project uses RFID technology to detect the movement of a train model at dif
 - Breadboard and jumper wires
 
 ## 5. How the System Works
-1. RFID readers detect the train at different positions.
-2. The system identifies whether the train is moving from track A to B or B to A.
+1. IR sensors detect the train at different positions.
+2. The system identifies whether the train is moving from track A to B or B to A based on sensor order.
 3. The servo motor closes the gate when the train approaches.
 4. The buzzer and LEDs warn people about the arriving train.
 5. After the train passes, the system opens the gate automatically.
 
 ## 6. Features of the Project
 - Automatic gate control
-- Train detection using RFID
+- Train detection using IR sensors
 - Visual and sound alerts
 - LCD status display
 - Two-way movement support
@@ -51,18 +51,18 @@ This project uses RFID technology to detect the movement of a train model at dif
 
 ## 9. Limitations
 - Works best for a prototype model
-- RFID detection depends on tag placement and reader accuracy
+- IR detection depends on sensor alignment, distance, lighting, and reflective surfaces
 - Real railway systems need more advanced sensors and communication modules
 
 ## 10. Interview Questions and Answers
 ### Q1. What is this project about?
-A. It is an IoT-based automated railway gate control system that detects train movement and opens or closes the gate automatically.
+A. It is an Arduino-based automated railway gate control system that detects train movement with four IR sensors and opens or closes the gate automatically.
 
 ### Q2. Which microcontroller is used in this project?
 A. Arduino Uno is used as the main controller.
 
 ### Q3. What technology is used to detect the train?
-A. RFID technology is used with RFID readers and tags.
+A. Four digital IR obstacle sensors are placed at two distances on each side of the crossing. Their trigger order identifies the train direction.
 
 ### Q4. What is the role of the servo motor?
 A. The servo motor physically moves the railway gate to open or close it.
@@ -74,7 +74,7 @@ A. They provide visual and sound alerts when a train is approaching.
 A. It shows the current status such as train approach, passing, or gate open/close status.
 
 ### Q7. How does the system handle both directions of train movement?
-A. The project uses multiple RFID readers to detect trains moving from both sides and control the gate accordingly.
+A. The project uses four IR sensors. The outer sensor detects approach, the inner sensor confirms the train is near, and the sensors on the opposite side confirm passage.
 
 ### Q8. What are the main advantages of this project?
 A. It improves safety, reduces manual effort, and automates the gate operation.
