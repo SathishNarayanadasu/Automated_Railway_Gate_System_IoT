@@ -22,14 +22,41 @@ This project uses four digital IR obstacle sensors to detect the movement of a t
 - Buzzer
 - Breadboard and jumper wires
 
-## 5. How the System Works
+## 5. Simple System Architecture
+```mermaid
+flowchart LR
+	A[IR Sensor 2 km A<br/>Pin 2] --> C[Arduino Uno<br/>Direction and gate logic]
+	B[IR Sensor 1 km A<br/>Pin 3] --> C
+	D[IR Sensor 1 km B<br/>Pin 4] --> C
+	E[IR Sensor 2 km B<br/>Pin 5] --> C
+	C --> F[Servo Motor<br/>Pin 6<br/>Open / Close Gate]
+	C --> G[Red LED<br/>Pin 7<br/>Warning]
+	C --> H[Green LED<br/>Pin 8<br/>Safe]
+	C --> I[Buzzer<br/>Pin 10<br/>Alert]
+	C --> J[16x2 I2C LCD<br/>Status Display]
+```
+
+### Pin Connections
+| Component | Arduino pin | Function |
+|---|---:|---|
+| IR sensor 2 km A | 2 | Detects train approaching from A |
+| IR sensor 1 km A | 3 | Detects train near the gate from A |
+| IR sensor 1 km B | 4 | Detects train near the gate from B |
+| IR sensor 2 km B | 5 | Detects train approaching from B / confirms exit |
+| Servo motor | 6 | Opens and closes the gate |
+| Red LED | 7 | Warning or gate closed |
+| Green LED | 8 | Safe or gate open |
+| Buzzer | 10 | Audible warning |
+| I2C LCD | SDA/SCL | Displays system status |
+
+## 6. How the System Works
 1. IR sensors detect the train at different positions.
 2. The system identifies whether the train is moving from track A to B or B to A based on sensor order.
 3. The servo motor closes the gate when the train approaches.
 4. The buzzer and LEDs warn people about the arriving train.
 5. After the train passes, the system opens the gate automatically.
 
-## 6. Features of the Project
+## 7. Features of the Project
 - Automatic gate control
 - Train detection using IR sensors
 - Visual and sound alerts
@@ -37,24 +64,24 @@ This project uses four digital IR obstacle sensors to detect the movement of a t
 - Two-way movement support
 - Low-cost and simple implementation
 
-## 7. Applications
+## 8. Applications
 - Railway crossings
 - Smart transportation systems
 - Educational IoT projects
 - Prototype railway automation systems
 
-## 8. Advantages
+## 9. Advantages
 - Increases safety
 - Reduces manual labor
 - Low cost and easy to build
 - Useful for learning embedded systems and IoT
 
-## 9. Limitations
+## 10. Limitations
 - Works best for a prototype model
 - IR detection depends on sensor alignment, distance, lighting, and reflective surfaces
 - Real railway systems need more advanced sensors and communication modules
 
-## 10. Interview Questions and Answers
+## 11. Interview Questions and Answers
 ### Q1. What is this project about?
 A. It is an Arduino-based automated railway gate control system that detects train movement with four IR sensors and opens or closes the gate automatically.
 
